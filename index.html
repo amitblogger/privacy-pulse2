@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Pulse Dashboard</title>
+  <!-- Google Fonts: Oswald, Poppins, Orbitron, Merriweather -->
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Poppins:wght@400;600&family=Orbitron:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
+        integrity="sha512-yHROy+8Qd3uXEN+5Oj4K+RWBy2sn3b93v4wea5pSruE4sYFiG48zR2k5S84D1sKh9R2jG9a91nIrxPXXkrc+Pg==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* CSS Variables & Color Palette */
+    :root {
+      --primary: #2575fc;
+      --accent: #6a11cb;
+      --brand: #FFC107; /* New vibrant gold for brand name */
+      --bg-light: #d3d3d3;
+      --card-bg-light: #ffffff;
+      --text-light: #333333;
+      --primary-dark: #1e1e1e;
+      --card-bg-dark: #333333;
+      --text-dark: #e0e0e0;
+      --transition-speed: 0.3s;
+    }
+    
+    /* Base Styles */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      line-height: 1.6;
+      transition: background var(--transition-speed), color var(--transition-speed);
+    }
+    a { text-decoration: none; color: var(--primary); }
+    
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      padding: 2.5rem 1rem;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+    header h1 { 
+      font-family: 'Oswald', sans-serif;
+      font-size: 3rem; 
+      margin-bottom: 0.25rem; 
+      font-weight: 700;
+    }
+    header h1 .brand {
+      color: var(--brand);
+    }
+    header .tagline {
+      font-family: 'Merriweather', serif;
+      font-size: 1.25rem;
+      color: #FFEB3B; /* Bright yellow for tagline */
+      margin-bottom: 0.5rem;
+    }
+    header p { font-size: 1.25rem; }
+    
+    /* Dark mode & Help buttons */
+    #modeToggle, #helpBtn {
+      position: absolute;
+      top: 1rem;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform var(--transition-speed);
+    }
+    #modeToggle { right: 3rem; }
+    #helpBtn { right: 1rem; }
+    #modeToggle:hover, #helpBtn:hover { transform: scale(1.1); }
+    
+    /* Navigation Bar */
+    nav {
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      padding: 0.75rem;
+      margin-bottom: 1.5rem;
+      transition: background var(--transition-speed);
+    }
+    nav a {
+      margin: 0 0.75rem;
+      font-weight: 600;
+      transition: color var(--transition-speed);
+      padding: 0.5rem 0.75rem;
+    }
+    nav a:hover { color: var(--accent); }
+    
+    /* Additional Nav Links */
+    .nav-link { cursor: pointer; }
+    
+    /* Scan Section: Centered, Shrunk URL Block */
+    .scan-section {
+      max-width: 600px;
+      margin: 0 auto 1.5rem auto;
+      text-align: center;
+    }
+    .scan-form {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+    .scan-form input[type="url"] {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 2px solid #ddd;
+      border-radius: 0;
+      transition: border-color var(--transition-speed);
+    }
+    .scan-form input[type="url"]:focus { border-color: var(--primary); outline: none; }
+    .scan-form button {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border: none;
+      border-radius: 0;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+    }
+    .scan-form button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Snapshot Container: Full-Width, Below URL Block */
+    .snapshot-container {
+      max-width: 1100px;
+      margin: 0 auto 1.5rem auto;
+      padding: 1.5rem;
+      background: var(--card-bg-light);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-top: 5px solid #9C27B0;
+      text-align: center;
+    }
+    .snapshot-container h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .snapshot-img {
+      width: 100%;
+      height: auto;
+      border: 3px solid #ccc;
+    }
+    
+    /* Report Grid: Remaining Cards in a 2-Column Layout */
+    .report-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      gap: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* Card Component (Squared) with Section Accents */
+    .card {
+      background: var(--card-bg-light);
+      border-radius: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      transition: transform var(--transition-speed), background var(--transition-speed);
+      position: relative;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card h2 {
+      font-family: 'Oswald', sans-serif;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    /* Vibrant top borders for different sections */
+    .card-speedometer { border-top: 5px solid #FF5722; }
+    .card-breakdown { border-top: 5px solid #FF9800; }
+    .card-tracking { border-top: 5px solid #4CAF50; }
+    .card-recommendations { border-top: 5px solid #2196F3; }
+    .card-methodology { border-top: 5px solid #009688; }
+    .card-download { border-top: 5px solid #9C27B0; }
+    .card p, .card ul { margin-bottom: 1rem; }
+    .card ul { list-style: disc inside; }
+    
+    /* Digital Gauge (Digital Clock-style Display) with Blinking Animation */
+    .digital-gauge {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 4rem;
+      text-align: center;
+      padding: 1rem;
+      background: #000;
+      border-radius: 4px;
+      color: #fff;
+      letter-spacing: 0.1rem;
+      margin: 1rem auto;
+      width: 80%;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink { 50% { opacity: 0.5; } }
+    
+    /* Simplified Breakdown: Each Criterion in a Colored Small Container */
+    .simplified-breakdown {
+      list-style: none;
+      padding: 0;
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .breakdown-item {
+      flex: 1 1 calc(50% - 0.5rem);
+      padding: 0.5rem;
+      border-radius: 4px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .breakdown-https { background: #4CAF50; }       /* Green */
+    .breakdown-headers { background: #FF9800; }       /* Orange */
+    .breakdown-vuln { background: #F44336; }          /* Red */
+    .breakdown-privacy { background: #2196F3; }       /* Blue */
+    .breakdown-item .explanation {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: #fff;
+      opacity: 0.9;
+    }
+    
+    /* Download Card: Bigger Container with PDF Icon */
+    .card-download {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+    .card-download h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .card-download .download-btn {
+      font-size: 1.5rem;
+      padding: 1rem 2rem;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* Download Button (Bigger) */
+    .download-btn {
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 0;
+      font-weight: 600;
+      text-align: center;
+      transition: background var(--transition-speed);
+    }
+    .download-btn:hover { background: var(--accent); }
+    
+    /* Modal (Guided Walkthrough) */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: var(--card-bg-light);
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 0;
+      max-width: 600px;
+      text-align: center;
+    }
+    .close-modal {
+      float: right;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--primary);
+    }
+    
+    /* Dark Mode Styles */
+    .dark-mode {
+      background: var(--primary-dark);
+      color: var(--text-dark);
+    }
+    .dark-mode header { background: linear-gradient(135deg, var(--primary-dark), #000); }
+    .dark-mode nav { background: var(--primary-dark); }
+    .dark-mode .card { background: var(--card-bg-dark); color: var(--text-dark); }
+    .dark-mode .scan-form input[type="url"] { border-color: #555; }
+    .dark-mode .download-btn { background: var(--accent); }
+  </style>
+</head>
+<body>
+  <!-- Header with Dark Mode Toggle & Help Icon -->
+  <header>
+    <h1><i class="fas fa-user-secret"></i> <span class="brand">Privacy Pulse</span></h1>
+    <div class="tagline">Your Digital Privacy, In Focus</div>
+    <p>Learn how websites track you and how to protect your privacy.</p>
+    <button id="modeToggle" title="Toggle Dark/Light Mode"><i class="fas fa-adjust"></i></button>
+    <button id="helpBtn" title="Need Help?"><i class="fas fa-question-circle"></i></button>
+  </header>
+  
+  <!-- Navigation Bar with Hover Buttons for Pages -->
+  <nav>
+    <a href="#" class="nav-link">Dashboard</a>
+    <a href="#" class="nav-link">About Us</a>
+    <a href="#" class="nav-link">FAQ</a>
+    <a href="#" class="nav-link">Blog</a>
+    <a href="#" class="nav-link">Contact</a>
+    <a href="#" class="nav-link">Terms</a>
+  </nav>
+  
+  <!-- Scan Section: Centered, Shrunk URL Block -->
+  <div class="scan-section">
+    <form class="scan-form">
+      <input type="url" id="websiteUrl" placeholder="Enter website URL (e.g. https://example.com)" required>
+      <button id="scanBtn" type="button">Scan Website</button>
+    </form>
+  </div>
+  <div class="loader" id="loader"></div>
+  
+  <!-- Homepage Snapshot Container (Full-Width) -->
+  <div class="snapshot-container" id="snapshotContainer">
+    <h2>Homepage Snapshot</h2>
+    <!-- Replace placeholder URL with your dynamic screenshot API URL -->
+    <img id="snapshotImg" class="snapshot-img" src="https://via.placeholder.com/400x300?text=Homepage+Snapshot" alt="Website Homepage Snapshot">
+    <p>This snapshot was captured during the scan.</p>
+  </div>
+  
+  <!-- Report Grid: Remaining Cards in a 2-Column Layout -->
+  <div class="report-grid" id="reportGrid">
+    <!-- Card: Security Snapshot with Digital Gauge -->
+    <div class="card card-speedometer">
+      <h2>Your Security Snapshot</h2>
+      <p><strong>Overall Security Score:</strong> <span id="overallScore">--</span> (Grade: <span id="overallGrade">--</span>)</p>
+      <p title="Key Alerts indicate potential immediate risks."><strong>Key Alerts:</strong> <span id="keyFindings">Scanning in progress...</span></p>
+      <p><em>Last Scanned:</em> Just now</p>
+      <p><em>Certificate Validity:</em> Valid until 2027</p>
+      <!-- Digital Clock-style Gauge Display with Blinking Animation -->
+      <div id="digitalGauge" class="digital-gauge">--%</div>
+    </div>
+    
+    <!-- Card: Simplified Breakdown with Colored Containers -->
+    <div class="card card-breakdown">
+      <h2>Simplified Breakdown</h2>
+      <ul class="simplified-breakdown">
+        <li class="breakdown-item breakdown-https">
+          <span class="icon">🔒</span> HTTPS/SSL: Excellent
+          <div class="explanation">Data is transmitted securely.</div>
+        </li>
+        <li class="breakdown-item breakdown-headers">
+          <span class="icon">🛡️</span> Security Headers: Good
+          <div class="explanation">Key headers block common attacks.</div>
+        </li>
+        <li class="breakdown-item breakdown-vuln">
+          <span class="icon">⚠️</span> Vulnerabilities: Low
+          <div class="explanation">Few issues found.</div>
+        </li>
+        <li class="breakdown-item breakdown-privacy">
+          <span class="icon">👁️</span> Privacy: Moderate
+          <div class="explanation">Some tracking present.</div>
+        </li>
+      </ul>
+      <p>Each criterion is shown in its own colored container.</p>
+    </div>
+    
+    <!-- Card: Data Tracking Details with More Information -->
+    <div class="card card-tracking">
+      <h2>Data Tracking Details</h2>
+      <p><strong>What is Collected:</strong> Cookies, browser fingerprints, geolocation data, and more.</p>
+      <p><strong>Total Trackers:</strong> 15 detected from 7 domains.</p>
+      <p title="Data usage shows how your info is shared."><strong>How It Is Used:</strong> Shared with third parties for targeted ads and analytics, leading to personalized ads and profiling.</p>
+      <p><em>Note:</em> Some trackers may be essential for functionality.</p>
+    </div>
+    
+    <!-- Card: Recommendations -->
+    <div class="card card-recommendations">
+      <h2>Our Recommendations</h2>
+      <p>To protect your privacy, consider:</p>
+      <ul>
+        <li>Using privacy-focused browsers or tracker blockers.</li>
+        <li>Verifying HTTPS before sharing sensitive info.</li>
+        <li>Limiting personal data on heavily tracked sites.</li>
+        <li>Keeping your browser and security software updated.</li>
+      </ul>
+      <p><strong>Side Effects:</strong> You might see personalized ads or profiling.</p>
+    </div>
+    
+    <!-- Card: Review Methodology -->
+    <div class="card card-methodology">
+      <h2>How This Review Was Prepared</h2>
+      <p>The review was generated using an automated scan that simulates a real user visit. It includes:</p>
+      <ul>
+        <li>Collection of network requests, cookies, and scripts via headless browsing.</li>
+        <li>Analysis of security headers, SSL/TLS configurations, and vulnerabilities.</li>
+        <li>Cross-referencing tracking elements with trusted databases.</li>
+        <li>Compilation into a comprehensive report.</li>
+      </ul>
+      <p>This methodology ensures a thorough evaluation of potential risks and privacy concerns.</p>
+    </div>
+    
+    <!-- Card: Download Full Report -->
+    <div class="card card-download">
+      <h2>Download Full Report</h2>
+      <button class="download-btn">
+        <i class="fas fa-file-pdf"></i> Download PDF
+      </button>
+    </div>
+  </div>
+  
+  <!-- Guided Walkthrough Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <h2>Welcome to Your Security Dashboard</h2>
+      <p>This tool scans websites to reveal tracking details and assess site security.</p>
+      <p>Explore the homepage snapshot, security snapshot with a digital gauge, a simplified breakdown, detailed tracking info, recommendations, and review methodology.</p>
+      <p>Use the dark/light mode toggle at the top right, and click the help icon for guidance.</p>
+    </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Privacy Pulse. All rights reserved.
+  </footer>
+  
+  <script>
+    // Function to update the digital gauge with score and dynamic color, with blinking animation
+    function updateDigitalGauge(score) {
+      const gauge = document.getElementById('digitalGauge');
+      gauge.textContent = score + '%';
+      // Update background color based on score thresholds:
+      // ≥ 90: green, 60–89: orange, below 60: red
+      if (score >= 90) {
+        gauge.style.background = "#4CAF50"; // green
+      } else if (score >= 60) {
+        gauge.style.background = "#FF9800"; // orange
+      } else {
+        gauge.style.background = "#F44336"; // red
+      }
+    }
+    
+    // Simulated Scan Process (Replace with real API integration)
+    document.getElementById('scanBtn').addEventListener('click', function() {
+      const urlInput = document.getElementById('websiteUrl').value;
+      if (!urlInput) { alert("Please enter a valid URL"); return; }
+      
+      // Show loader and hide snapshot & report sections
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('snapshotContainer').style.display = 'none';
+      document.getElementById('reportGrid').style.display = 'none';
+      
+      // Simulate scan delay (3 seconds)
+      setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('snapshotContainer').style.display = 'block';
+        document.getElementById('reportGrid').style.display = 'grid';
+        
+        // Populate mock scan data (replace with real results)
+        const score = 92;
+        document.getElementById('overallScore').textContent = score;
+        document.getElementById('overallGrade').textContent = "A";
+        document.getElementById('keyFindings').textContent = "Secure connection with moderate tracking detected.";
+        
+        // Update the digital gauge display
+        updateDigitalGauge(score);
+        
+        // Optional: Update snapshot image dynamically using a screenshot API
+        // document.getElementById('snapshotImg').src = 'https://your-screenshot-api.example.com/?url=' + encodeURIComponent(urlInput);
+      }, 3000);
+    });
+    
+    // Dark/Light Mode Toggle
+    const modeToggle = document.getElementById('modeToggle');
+    modeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+    
+    // Guided Walkthrough Modal
+    const modal = document.getElementById('modal');
+    const helpBtn = document.getElementById('helpBtn');
+    const closeModal = document.getElementById('closeModal');
+    helpBtn.addEventListener('click', () => { modal.style.display = 'block'; });
+    closeModal.addEventListener('click', () => { modal.style.display = 'none'; });
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+  </script>
+</body>
+</html>
