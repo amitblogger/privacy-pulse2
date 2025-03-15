@@ -441,7 +441,29 @@
     &copy; 2025 Privacy Pulse. All rights reserved.
   </footer>
   
-  <script>
+  <function scanSecurityHeaders(url) {
+  // Construct the API URL using the input URL
+  const apiUrl = `https://securityheaders.io/?q=${encodeURIComponent(url)}&format=json`;
+  
+  // Use fetch to get the data
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Security Headers Data:", data);
+      // For example, update your dashboard here using data:
+      // updateSecurityHeaders(data);
+    })
+    .catch(error => {
+      console.error("Error fetching security headers:", error);
+      alert("There was an error scanning the website. Please try again later.");
+    });
+}
+>
     // Function to update the digital gauge with score and dynamic color, with blinking animation
     function updateDigitalGauge(score) {
       const gauge = document.getElementById('digitalGauge');
