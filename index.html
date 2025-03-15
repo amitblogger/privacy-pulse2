@@ -331,7 +331,26 @@
   <div class="scan-section">
     <form class="scan-form">
       <input type="url" id="websiteUrl" placeholder="Enter website URL (e.g. https://example.com)" required>
-      <button id="scanBtn" type="button">Scan Website</button>
+      <document.getElementById('scanBtn').addEventListener('click', function() {
+  const urlInput = document.getElementById('websiteUrl').value;
+  if (!urlInput) {
+    alert("Please enter a valid URL");
+    return;
+  }
+  
+  // Show loader if you have one
+  document.getElementById('loader').style.display = 'block';
+  
+  // Call the API
+  scanSecurityHeaders(urlInput);
+  
+  // Simulated scan update (for now, you can later remove this if API data is used)
+  setTimeout(() => {
+    document.getElementById('loader').style.display = 'none';
+    // Update your UI elements based on API data here
+  }, 3000);
+});
+>
     </form>
   </div>
   <div class="loader" id="loader"></div>
